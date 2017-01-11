@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 /**
- * @author jam4761
+ * @author jmartin489
  *
  */
 public class Game extends JFrame implements GameController {
