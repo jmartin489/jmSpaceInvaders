@@ -144,7 +144,7 @@ public class Game extends JFrame implements GameController {
 		{
 			if(lost)
 			{
-				displayMessage("GAME OVER", gc, Color.red, 0);
+				displayMessage("INVASION SUCCESSFUL GAME OVER", gc, Color.red, 0);
 				try 
 				{ // 2 second delay
 					Thread.sleep(2000);
@@ -234,11 +234,9 @@ public class Game extends JFrame implements GameController {
 				Entity thisActor = (Entity) entities.get(i);
 				Entity thatActor = (Entity) entities.get(j);
 				
-				if(thatActor instanceof Alien){
+				if(thatActor instanceof Alien)
 					if(thatActor.locY + thatActor.getHeight() > canvas.getHeight())
 						notifyLost();
-					System.out.println("thisActor.locY = " + thisActor.locY);
-				}
 				
 				if(thisActor.detectCollision(thatActor)){
 					if(thisActor instanceof SpaceShip)
