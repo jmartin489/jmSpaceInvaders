@@ -87,6 +87,9 @@ public class Game extends JFrame implements GameController {
 	
 	private Canvas canvas;
 	
+	//Shield
+	private Barrier barrierShield;
+	
 	public Game(){
 		super("The Final Wave");
 		canvas = new Canvas();
@@ -157,13 +160,12 @@ public class Game extends JFrame implements GameController {
 			else if (won)
 			{
 				
-				displayMessage("*** YOU ARE WINNER! ***", gc, Color.green, 0);
+				displayMessage("*** DEFENSE SUCCESSFUL - YOU WIN! ***", gc, Color.green, 0);
 			} 
 			else if(userInputMode)
 			{
 				
 				displayMessage("Enter your name: " + playerName, gc, Color.yellow, 40);
-				
 				
 			} 
 			else 
@@ -234,27 +236,47 @@ public class Game extends JFrame implements GameController {
 				Entity thisActor = (Entity) entities.get(i);
 				Entity thatActor = (Entity) entities.get(j);
 				
+				//If alien reaches bottom of screen, game over.
 				if(thatActor instanceof Alien)
 					if(thatActor.locY + thatActor.getHeight() > canvas.getHeight())
 						notifyLost();
 				
+				//There is a collision
 				if(thisActor.detectCollision(thatActor)){
-					if(thisActor instanceof SpaceShip)
+					//If spaceship collides with anything (except Missile), game over.
+					if(thisActor instanceof SpaceShip && !(thatActor instanceof Missile))
 						notifyLost();
-					else if (thatActor instanceof Missile){
+					//Play poop noise if missile collides with anything
+					if (thatActor instanceof Missile){
 						SoundFX.COLLIDE.play();
 					}
-					removeList.add(thisActor);
-					removeList.add(thatActor);
-					if(thisActor instanceof AlienShip){
-						alienShip();
-						score +=1000;
-						removeList.add(alienShip);
-					} else {
+					
+					//add both actors to removeList
+					if(thisActor instanceof Barrier && thatActor instanceof Missile) {
+						//removeList.add(thisActor);
+						removeList.add(thatActor);
+						System.out.println("Missile hit Barrier!");
+						barrierShield.addHitPoint();
+						System.out.println(barrierShield.getTimesHit());
+						if(barrierShield.getTimesHit() == 5)
+							removeList.add(thisActor);
+					}
+					
+					//TODO alienStillAlive logic -- notifyWin() called with one alien left
+					else {
+						removeList.add(thisActor);
+						removeList.add(thatActor);
 						alienStillAlive--;
 						speedUpAliens();
 						score +=100;
 					}
+					if(thisActor instanceof AlienShip){
+						alienShip();
+						score +=1000;
+						alienStillAlive++;
+						removeList.add(alienShip);
+					}
+					
 				}
 			}
 		}
@@ -445,11 +467,14 @@ public class Game extends JFrame implements GameController {
 	
 	private void speedUpAliens(){
 		double factor = 3.0;
-		
+		double maxSpeed = 500.0;
 		for (Entity entity : entities){
 			
-			if (entity instanceof Alien)
+			if (entity instanceof Alien){
 				entity.setHorizontalSpeed(entity.getHorizontalSpeed() * (1.0 + factor/100));
+				if(entity.getHorizontalSpeed() > maxSpeed)
+					entity.setHorizontalSpeed(maxSpeed);
+			}
 		}
 	}
 	
@@ -475,6 +500,9 @@ public class Game extends JFrame implements GameController {
 		entities.add(ship);
 		
 		alienShip();
+		
+		barrierShield = new Barrier("sprites/shield.png", 1, 200, HEIGHT-300, this);
+		entities.add(barrierShield);
 		
 		//create an array of aliens
 		alienStillAlive = 0;

@@ -15,7 +15,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public enum SoundFX implements LineListener
 {
-	WIN("audio/win.wav"), LOSE("audio/loose.wav"), COLLIDE("audio/hit.wav"), START("audio/start.wav"),
+	WIN("audio/win.wav"), LOSE("audio/noMercy.wav"), COLLIDE("audio/hit.wav"), START("audio/start.wav"),
 	SHOOT("audio/laser.wav");
 	
 	private Clip clip;
